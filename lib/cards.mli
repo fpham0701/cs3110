@@ -6,10 +6,21 @@ type rank
     highest *)
 
 type t
-(** Abstract Tuple representing the suit and rank of the card *)
+(** Abstract tuple representing the suit and rank of a card *)
 
-val deck : t list -> t
-(** [deck] contains all possible combinations of cards in a standard deck. *)
+val all_suits : unit -> suit list
+(** [all_suits ()] returns a list of all possible suits. *)
 
-val random_two_cards : t
-(** [random_two_cards] draws two different cards for players *)
+val all_ranks : unit -> rank list
+(** [all_ranks ()] returns a list of all possible ranks. *)
+
+val create_deck : unit -> t list
+(** [create_deck ()] returns a list [t list] of all possible combinations of
+    suits and ranks in a standard deck. *)
+
+val random_two_cards : unit -> t * t
+(** [random_two_cards ()] returns two random cards *)
+
+val string_of_card : t -> string
+(** [string_of_card card] returns a string representation of [card], displaying
+    both the suit and rank in a readable format. *)

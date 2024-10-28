@@ -42,3 +42,6 @@ let print_player player =
     (Printf.sprintf "%s, %s"
        (Cards.string_of_card (fst player.cards))
        (Cards.string_of_card (snd player.cards)))
+
+let remove_player player player_list =
+  List.filter (fun x -> x.name <> player.name) player_list

@@ -56,27 +56,38 @@ let rec player_turn player player_list =
   match action with
   | "check" ->
       print_endline (Poker.Players.get_name player ^ " chose to check.\n");
-      ()
+      player_list
   | "fold" ->
       print_endline (Poker.Players.get_name player ^ " chose to fold.\n");
-      ()
+      player_list
   | "bet" ->
       print_endline (Poker.Players.get_name player ^ " chose to bet.\n");
-      ()
+      player_list
   | "quit" ->
       print_endline
         (Poker.Players.get_name player
-        ^ "is exiting the game. Thank you for playing!")
+        ^ " is exiting the game. Thank you for playing!\n");
+      Poker.Players.remove_player player player_list
   | _ ->
       print_endline "Invalid action, please try again.";
       player_turn player player_list
 
-(** [game_loop players] iterates through all [players], giving each a turn in
-    each round. *)
+(** [game_loop player_list] iterates through the [player_list], giving each a
+    turn in each round, and returns the updated list of players. *)
 let rec game_loop player_list =
-  List.iter (fun player -> player_turn player player_list) player_list;
-  print_endline "Round completed. Moving to the next round.";
-  game_loop player_list
+  let updated_players =
+    List.fold_left
+      (fun acc player ->
+        if
+          List.exists
+            (fun p -> Poker.Players.get_name p = Poker.Players.get_name player)
+            acc
+        then player_turn player acc
+        else acc)
+      player_list player_list
+  in
+  print_endline "Round completed. Moving to the next round.\n";
+  game_loop updated_players
 
 let main () =
   Random.self_init ();

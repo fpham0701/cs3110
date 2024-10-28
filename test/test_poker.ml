@@ -47,6 +47,24 @@ let test_create_players _ =
       assert_bool "Each player should have two distinct cards." (card1 <> card2))
     players
 
+let test_remove_players =
+  let players = Poker.Players.create_players () in
+  assert_equal 9 (List.length players) ~msg:"There should be 9 players.";
+
+  let removed_one_list =
+    Poker.Players.remove_player (List.nth players 0) players
+  in
+  assert_equal 8
+    (List.length removed_one_list)
+    ~msg:"There should be 8 players now (removed player 1)";
+
+  let removed_two_list =
+    Poker.Players.remove_player (List.nth removed_one_list 4) removed_one_list
+  in
+  assert_equal 7
+    (List.length removed_two_list)
+    ~msg:"There should be 7 players now (2 removed)"
+
 (* Test suite *)
 let tests =
   "Test suite for Poker module"

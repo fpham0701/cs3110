@@ -12,7 +12,7 @@ let initialize_players () =
     if n <= 0 then List.rev acc
     else (
       print_endline
-        ("Enter name for Player " ^ string_of_int (num_players - n + 1) ^ ": ");
+        ("\nEnter name for Player " ^ string_of_int (num_players - n + 1) ^ ": ");
       let name = read_line () in
       get_player_names (n - 1) (name :: acc))
   in
@@ -28,7 +28,7 @@ let start_game () =
   print_endline "Starting the game...";
   let player_list = initialize_players () in
 
-  print_endline "Press Enter to begin revealing each player's cards.";
+  print_endline "\nPress Enter to begin revealing each player's cards.";
   ignore (read_line ());
 
   List.iter
@@ -59,7 +59,7 @@ let rec player_turn player player_list =
       player_list
   | "fold" ->
       print_endline (Poker.Players.get_name player ^ " chose to fold.\n");
-      player_list
+      Poker.Players.remove_player player player_list
   | "bet" ->
       print_endline (Poker.Players.get_name player ^ " chose to bet.\n");
       player_list

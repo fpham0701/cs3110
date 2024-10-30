@@ -61,7 +61,12 @@ let rec player_turn player player_list =
       print_endline (Poker.Players.get_name player ^ " chose to fold.\n");
       Poker.Players.remove_player player player_list
   | "bet" ->
+      print_endline "Enter the amount to bet: ";
+      let bet_amount = int_of_string (read_line ()) in
+      (* Poker.Players.place_bet player bet_amount; *)
+      print_endline (Poker.Players.get_name player ^ " chose to bet " ^ string_of_int bet_amount ^ ".\n");
       print_endline (Poker.Players.get_name player ^ " chose to bet.\n");
+
       player_list
   | "quit" ->
       print_endline
@@ -71,6 +76,13 @@ let rec player_turn player player_list =
   | _ ->
       print_endline "Invalid action, please try again.";
       player_turn player player_list
+
+let flop deck =
+  let deck = Poker.Cards.create_deck () in
+  let drawn1 = Poker.Cards.draw deck in
+  let drawn2 = Poker.Cards.draw (snd drawn1) in
+  let drawn3 = Poker.Cards.draw (snd drawn2) in
+  (fst drawn1, fst drawn2, fst drawn3, snd drawn3)
 
 (** [game_loop player_list] iterates through the [player_list], giving each a
     turn in each round, and returns the updated list of players. *)

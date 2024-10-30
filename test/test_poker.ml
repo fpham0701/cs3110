@@ -9,15 +9,19 @@ let make_deck_length_test =
   "52 unique cards" >:: fun _ ->
   assert_equal 52 (List.length test_deck) ~msg:"Deck should contain 52 cards."
 
-(** [make_random_two_cards_test] checks that two random cards are unique and
+(** [draw_two_cards_test] checks that two draws cards are unique and
     valid. *)
-let make_random_two_cards_test =
+let draw_two_cards_test =
   "Random two cards test" >:: fun _ ->
-  let card1, card2 = Poker.Cards.random_two_cards () in
+  let draw1 = Poker.Cards.draw test_deck in
+  let draw2 = Poker.Cards.draw (snd draw1) in
+  let card1 = fst draw1 in
+  let card2 = fst draw2 in
+  let new_deck = snd draw2 in
   assert_bool "The two cards should be different" (card1 <> card2);
-  let deck = Poker.Cards.create_deck () in
-  assert_bool "First card should be in the deck" (List.mem card1 deck);
-  assert_bool "Second card should be in the deck" (List.mem card2 deck)
+  assert_bool "First card should no longer be in the deck" (not (List.mem card1 new_deck));
+  assert_bool "Second card should no longer be in the deck" (not (List.mem card2 new_deck));
+  assert_bool "The deck should have 50 cards" (List.length new_deck = 50)
 
 (** [test_create_players] checks that create_players produces 9 players with
     unique names and two distinct cards each. *)
@@ -70,7 +74,7 @@ let tests =
   "Test suite for Poker module"
   >::: [
          make_deck_length_test;
-         make_random_two_cards_test;
+         draw_two_cards_test;
          "test_create_players" >:: test_create_players;
        ]
 

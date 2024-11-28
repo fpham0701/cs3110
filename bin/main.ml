@@ -1,7 +1,9 @@
 open Poker.Actions
 open Poker.Players
 open Poker.Cards
-(* open Poker.OnTable *)
+
+(* Declare players as a mutable reference to an empty list *)
+let players = ref []
 
 (** [initialize_players] prompts for the number of players and their names, then
     creates a list of players with two cards each. *)
@@ -22,13 +24,13 @@ let initialize_players () =
     output. *)
 let clear_screen () = print_endline "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 
-(** [start_game] initializes players and deals cards to each, then returns the
-    list of players. *)
+(** [start_game] initializes players and deals cards to each, then updates the
+    global players reference. *)
 let start_game () =
   print_endline "Starting the game...";
-  let player_list = initialize_players () in
+  players := initialize_players ();
 
-  print_endline "\nPress Enter to begin revealing each player's cards.";
+  print_endline "Press Enter to begin revealing each player's cards.";
   ignore (read_line ());
 
   List.iter
@@ -42,52 +44,34 @@ let start_game () =
       print_endline "Press Enter to continue.";
       ignore (read_line ());
       clear_screen ())
-    player_list;
+    !players;
 
-  print_endline "All players have received their cards.";
-  player_list
+  print_endline "All players have received their cards."
 
-(** [player_turn player player_list] handles a single [player]'s (from the
-    [player_list])turn by prompting for an action. *)
-let rec player_turn player player_list =
+(** [player_turn player] handles a single [player]'s turn by prompting for an
+    action. *)
+let rec player_turn player =
   print_endline (Poker.Players.get_name player ^ ", it's your turn!");
-  print_endline "Choose an action: 'check', 'fold', 'bet', or 'quit'";
-  let action = read_line () in
-  match action with
-  | "check" ->
-      print_endline (Poker.Players.get_name player ^ " chose to check.\n");
-      player_list
-  | "fold" ->
+  let options = [ "check"; "fold"; "call"; "raise" ] in
+  match Poker.Actions.action options with
+  | Poker.Actions.Check ->
+      print_endline (Poker.Players.get_name player ^ " chose to check.\n")
+  | Poker.Actions.Fold ->
       print_endline (Poker.Players.get_name player ^ " chose to fold.\n");
-      Poker.Players.remove_player player player_list
-  | "bet" ->
-      print_endline (Poker.Players.get_name player ^ " chose to bet.\n");
-      player_list
-  | "quit" ->
+      players := Poker.Players.remove_player player !players
+  | Poker.Actions.Call ->
+      print_endline (Poker.Players.get_name player ^ " chose to call.\n")
+  | Poker.Actions.Raise amount ->
       print_endline
         (Poker.Players.get_name player
-        ^ " is exiting the game. Thank you for playing!\n");
-      Poker.Players.remove_player player player_list
-  | _ ->
-      print_endline "Invalid action, please try again.";
-      player_turn player player_list
+        ^ " raised the bet to " ^ string_of_int amount ^ ".\n")
 
-(** [game_loop player_list] iterates through the [player_list], giving each a
-    turn in each round, and returns the updated list of players. *)
-let rec game_loop player_list =
-  let updated_players =
-    List.fold_left
-      (fun acc player ->
-        if
-          List.exists
-            (fun p -> Poker.Players.get_name p = Poker.Players.get_name player)
-            acc
-        then player_turn player acc
-        else acc)
-      player_list player_list
-  in
+(** [game_loop players] iterates through all [players], giving each a turn in
+    each round. *)
+let rec game_loop () =
+  List.iter (fun player -> player_turn player) !players;
   print_endline "Round completed. Moving to the next round.\n";
-  game_loop updated_players
+  game_loop ()
 
 let main () =
   Random.self_init ();
@@ -96,8 +80,8 @@ let main () =
   match user_input with
   | "y" ->
       print_endline "\nWelcome to Poker!";
-      let player_list = start_game () in
-      game_loop player_list
+      start_game ();
+      game_loop ()
   | "n" -> print_endline "Sorry to see you go."
   | _ -> print_endline "Oops, something went wrong. The input is invalid!"
 

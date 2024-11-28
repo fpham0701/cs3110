@@ -16,9 +16,9 @@ val fold : t
 (** [fold] represents the action of folding, meaning the player gives up their
     hand and forfeits the round. *)
 
-val raise : t
-(** [raise] represents the action of raising the current bet, meaning the player
-    increases the stakes by betting more. *)
+val raise : int -> t
+(** [raise amount] represents the action of raising the current bet by [amount],
+    meaning the player increases the stakes by betting more. *)
 
 val bet_size : int -> int
 (** [bet_size amount] allows the user to specify the size of their bet by

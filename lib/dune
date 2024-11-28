@@ -1,3 +1,2 @@
 (library
- (name poker)
- (modules Cards Players Actions))
+ (name poker))

@@ -8,7 +8,8 @@ type t = {
 
 let get_name player = player.name
 let get_card player = player.cards
-let get_contribution player = player.contribution
+let get_contributions player = player.contribution
+let set_contributions player amount = player.contribution <- amount
 
 let create_players_with_names names =
   let rec create_players names =

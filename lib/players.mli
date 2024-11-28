@@ -1,10 +1,6 @@
 open Cards
 
-type t = {
-  name : string;
-  mutable cards : Cards.t * Cards.t;
-  mutable contribution : int;
-}
+type t
 (** Abstract type representing a player and their cards *)
 
 val get_name : t -> string
@@ -12,6 +8,13 @@ val get_name : t -> string
 
 val get_card : t -> Cards.t * Cards.t
 (** [get_card player] returns the cards of [player]. *)
+
+val get_contributions : t -> int
+(** [get_contributions players] returns the contributions of [player]. *)
+
+val set_contributions : t -> int -> unit
+(** [set_contributions player amount] sets the [player]'s contribution to be
+    [amount] *)
 
 val create_players_with_names : string list -> t list
 (** [create_players_with_names names] creates a list of players with the given

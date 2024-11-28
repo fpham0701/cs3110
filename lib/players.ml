@@ -5,6 +5,8 @@ type t = {
   cards : Cards.t * Cards.t;
 }
 
+let deck = Cards.create_deck ()
+
 let get_name player = player.name
 let get_card player = player.cards
 
@@ -24,7 +26,11 @@ let create_players () =
   in
   List.map
     (fun name ->
-      let player_cards = Cards.random_two_cards () in
+      let player_cards = 
+        let drawn1 = Cards.draw deck in
+        let drawn2 = Cards.draw (snd drawn1) in
+        (fst drawn1, fst drawn2)
+      in
       { name; cards = player_cards })
     player_names
 

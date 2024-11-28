@@ -52,6 +52,15 @@ let random_two_cards () : t * t =
     let second_card = List.nth deck second_card_index in
     (first_card, second_card)
 
+let draw deck : t * t list =
+  let deck_size = List.length deck in
+  if deck_size = 0 then failwith "Deck is empty"
+  else
+    let card_index = Random.int deck_size in
+    let card = List.nth deck card_index in
+    let new_deck = List.filteri (fun i _ -> i <> card_index) deck in
+    (card, new_deck)
+
 let string_of_card (card : t) : string =
   let suit, rank = card in
   Printf.sprintf "%s%s"
@@ -74,3 +83,5 @@ let string_of_card (card : t) : string =
     | Heart -> "♥"
     | Clover -> "♣"
     | Club -> "♦")
+
+let size (deck : t list) : int = List.length deck 

@@ -25,7 +25,24 @@ let bet_round state =
       | Check -> check state player
       | Fold -> fold state player
       | Raise amount -> raise_bet state player amount)
-    (get_players state)
+    (get_players state);
+
+  List.iter
+    (fun player ->
+      if get_current_bet state <> get_contributions player then begin
+        print_endline ("It's " ^ get_name player ^ "'s turn to match:");
+        let options = [ "call"; "check"; "fold" ] in
+        let action = action player state options in
+        match action with
+        | Call -> call state player (get_current_bet state)
+        | Check -> check state player
+        | Fold -> fold state player
+        | Raise amount -> call state player (get_current_bet state)
+      end)
+    (get_players state);
+
+  print_endline "\nPress Enter to continue.";
+  ignore (read_line ())
 
 let start_game player_names =
   let players = create_players_with_names (List.rev player_names) in
@@ -79,4 +96,10 @@ let game_loop state =
   print_endline "=========================================\n";
 
   (* Final betting phase after the river *)
-  bet_round state
+  bet_round state;
+
+  print_endline "Enter who the winner is: ";
+
+  let winner = read_line () in
+  Printf.printf "Congrats to %s!" winner;
+  Printf.printf "You have won %d!" (get_pot state)

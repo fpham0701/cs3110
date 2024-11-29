@@ -34,23 +34,16 @@ let create_deck () : t list =
        (fun suit -> List.map (fun rank -> (suit, rank)) (all_ranks ()))
        (all_suits ()))
 
-let random_two_cards () : t * t =
+let random_two_cards () =
   let deck = create_deck () in
   let deck_size = List.length deck in
-  if deck_size < 2 then failwith "Deck has fewer than 2 cards"
-  else
-    let first_card_index = Random.int deck_size in
-    (* uses module random to generate a random number*)
-    let second_card_index =
-      let rec pick_different () =
-        let index = Random.int deck_size in
-        if index = first_card_index then pick_different () else index
-      in
-      pick_different ()
-    in
-    let first_card = List.nth deck first_card_index in
-    let second_card = List.nth deck second_card_index in
-    (first_card, second_card)
+  let first_card_index = Random.int deck_size in
+  let second_card_index = Random.int (deck_size - 1) in
+  let second_card_index =
+    if second_card_index >= first_card_index then second_card_index + 1
+    else second_card_index
+  in
+  (List.nth deck first_card_index, List.nth deck second_card_index)
 
 let draw deck : t * t list =
   let deck_size = List.length deck in
@@ -62,9 +55,13 @@ let draw deck : t * t list =
     (card, new_deck)
 
 let string_of_card (card : t) : string =
-  let suit, rank = card in
-  Printf.sprintf "%s%s"
-    (match rank with
+  let suit_to_string = function
+    | Spade -> "♠"
+    | Heart -> "♥"
+    | Clover -> "♣"
+    | Club -> "♦"
+  in
+  let rank_to_string = function
     | Two -> "2"
     | Three -> "3"
     | Four -> "4"
@@ -77,11 +74,9 @@ let string_of_card (card : t) : string =
     | Jack -> "J"
     | Queen -> "Q"
     | King -> "K"
-    | Ace -> "A")
-    (match suit with
-    | Spade -> "♠"
-    | Heart -> "♥"
-    | Clover -> "♣"
-    | Club -> "♦")
+    | Ace -> "A"
+  in
+  let suit, rank = card in
+  Printf.sprintf "%s%s" (rank_to_string rank) (suit_to_string suit)
 
-let size (deck : t list) : int = List.length deck 
+let size (deck : t list) : int = List.length deck

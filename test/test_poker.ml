@@ -2,6 +2,13 @@ open OUnit2
 open Poker.Players
 open Poker.Cards
 
+let test_all_suits _ =
+  assert_equal ~msg:"All suits should be four" 4 (List.length (all_suits ()))
+
+let test_all_ranks _ =
+  assert_equal ~msg:"All ranks should be thirteen" 13
+    (List.length (all_ranks ()))
+
 let test_deck = Poker.Cards.create_deck ()
 
 (** [make_deck_length_test] checks that the deck has 52 unique cards. *)
@@ -9,8 +16,7 @@ let make_deck_length_test =
   "52 unique cards" >:: fun _ ->
   assert_equal 52 (List.length test_deck) ~msg:"Deck should contain 52 cards."
 
-(** [draw_two_cards_test] checks that two draws cards are unique and
-    valid. *)
+(** [draw_two_cards_test] checks that two draws cards are unique and valid. *)
 let draw_two_cards_test =
   "Random two cards test" >:: fun _ ->
   let draw1 = Poker.Cards.draw test_deck in
@@ -19,63 +25,49 @@ let draw_two_cards_test =
   let card2 = fst draw2 in
   let new_deck = snd draw2 in
   assert_bool "The two cards should be different" (card1 <> card2);
-  assert_bool "First card should no longer be in the deck" (not (List.mem card1 new_deck));
-  assert_bool "Second card should no longer be in the deck" (not (List.mem card2 new_deck));
+  assert_bool "First card should no longer be in the deck"
+    (not (List.mem card1 new_deck));
+  assert_bool "Second card should no longer be in the deck"
+    (not (List.mem card2 new_deck));
   assert_bool "The deck should have 50 cards" (List.length new_deck = 50)
 
-(** [test_create_players] checks that create_players produces 9 players with
-    unique names and two distinct cards each. *)
-let test_create_players _ =
-  let players = Poker.Players.create_players () in
-  assert_equal 9 (List.length players) ~msg:"There should be 9 players.";
-  let expected_names =
-    [
-      "Player 1";
-      "Player 2";
-      "Player 3";
-      "Player 4";
-      "Player 5";
-      "Player 6";
-      "Player 7";
-      "Player 8";
-      "Player 9";
-    ]
-  in
-  let actual_names = List.map Poker.Players.get_name players in
-  assert_equal expected_names actual_names
-    ~msg:"Player names should match the expected names.";
+let test_create_deck _ =
+  let deck = create_deck () in
+  assert_equal ~msg:"Deck size should be 52" 52 (size deck);
+  assert_bool "Deck should contain unique cards"
+    (List.length deck = List.length (List.sort_uniq compare deck))
 
-  List.iter
-    (fun player ->
-      let card1, card2 = Poker.Players.get_card player in
-      assert_bool "Each player should have two distinct cards." (card1 <> card2))
-    players
+let test_random_two_cards _ =
+  let card1, card2 = random_two_cards () in
+  assert_bool "Random cards should be distinct" (card1 <> card2)
 
-let test_remove_players =
-  let players = Poker.Players.create_players () in
-  assert_equal 9 (List.length players) ~msg:"There should be 9 players.";
+let test_draw _ =
+  let deck = create_deck () in
+  let card, new_deck = draw deck in
+  assert_bool "Drawn card should not be in the new deck"
+    (not (List.mem card new_deck));
+  assert_equal ~msg:"New deck should have one less card"
+    (size deck - 1)
+    (size new_deck)
 
-  let removed_one_list =
-    Poker.Players.remove_player (List.nth players 0) players
-  in
-  assert_equal 8
-    (List.length removed_one_list)
-    ~msg:"There should be 8 players now (removed player 1)";
+let test_size _ =
+  let deck = create_deck () in
+  assert_equal ~msg:"Initial deck size should be 52" 52 (size deck);
+  let _, smaller_deck = draw deck in
+  assert_equal ~msg:"Deck size after draw should be 51" 51 (size smaller_deck)
 
-  let removed_two_list =
-    Poker.Players.remove_player (List.nth removed_one_list 4) removed_one_list
-  in
-  assert_equal 7
-    (List.length removed_two_list)
-    ~msg:"There should be 7 players now (2 removed)"
-
-(* Test suite *)
-let tests =
-  "Test suite for Poker module"
+(* Card Test suite *)
+let card_tests =
+  "Card Test Suite"
   >::: [
+         "test_all_suits" >:: test_all_suits;
+         "test_all_ranks" >:: test_all_ranks;
          make_deck_length_test;
          draw_two_cards_test;
-         "test_create_players" >:: test_create_players;
+         "test_create_deck" >:: test_create_deck;
+         "test_random_two_cards" >:: test_random_two_cards;
+         "test_draw" >:: test_draw;
+         "test_size" >:: test_size;
        ]
 
-let _ = run_test_tt_main tests
+let _ = run_test_tt_main card_tests

@@ -23,7 +23,7 @@ let rec prompt_name num_players =
     if remaining_players = 0 then names
     else begin
       print_endline
-        ("Enter the name of Player "
+        ("\nEnter the name of Player "
         ^ string_of_int (num_players - remaining_players + 1)
         ^ ":");
       let name = read_line () in
@@ -41,13 +41,12 @@ let reveal_player_cards players =
     | player :: rest ->
         clear_screen ();
         Printf.printf "Player: %s\n" (Poker.Players.get_name player);
-        let card1, card2 = player.cards in
+        let card1, card2 = Poker.Players.get_card player in
         Printf.printf "Cards: %s, %s\n"
           (Poker.Cards.string_of_card card1)
           (Poker.Cards.string_of_card card2);
         print_endline "\nPress Enter to continue.";
         ignore (read_line ());
-        (* ignores user's input*)
         clear_screen ();
         if rest <> [] then begin
           Printf.printf "Press Enter to see next %s's card..."
@@ -70,10 +69,11 @@ let rec main () =
       let num_players = prompt_num_players () in
       let player_names = prompt_name num_players in
       let state = Poker.Round.start_game player_names in
-      Printf.printf "\nPress Enter to see %s's Cards"
-        (Poker.Players.get_name (List.hd state.players));
+      let active_players = Poker.State.get_players state in
+      Printf.printf "\nPress Enter to see %s's Cards..."
+        (Poker.Players.get_name (List.hd active_players));
       ignore (read_line ());
-      reveal_player_cards state.players;
+      reveal_player_cards active_players;
       Poker.Round.game_loop state
   | "n" | "N" ->
       print_endline "Sorry to see you go.";

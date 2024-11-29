@@ -36,6 +36,7 @@ let check state player =
 let fold state player =
   state.players <-
     List.filter (fun p -> get_name p <> get_name player) state.players;
+  Printf.printf "\n%s has folded!\n" (get_name player);
   if List.length state.players = 1 then
     match state.players with
     | [ winner ] ->
@@ -47,4 +48,6 @@ let raise_bet state player amount =
   let new_bet = state.current_bet + amount in
   set_contributions player new_bet;
   update_pot state amount;
+  Printf.printf "%s has raised the current bet of %i to %i!\n\n"
+    (get_name player) state.current_bet new_bet;
   state.current_bet <- new_bet

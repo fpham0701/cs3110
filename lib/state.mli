@@ -19,6 +19,9 @@ val get_current_bet : t -> int
 (** [get_current_bet state] returns the current bet value from the given game
     [state]. *)
 
+val reset_current_bet : t -> unit
+(** [reset_current_bet state] resets the current bet to be 0]*)
+
 val get_players : t -> Players.t list
 (** [get_players state] returns the list of active players in the current game
     [state]. *)

@@ -6,10 +6,11 @@ type t = {
   mutable pot : int;
   mutable community_cards : Cards.t list;
   mutable current_bet : int;
+  mutable deck : Cards.t list;
 }
 
-let create_state players =
-  { players; pot = 0; community_cards = []; current_bet = 0 }
+let create_state players deck =
+  { players; pot = 0; community_cards = []; current_bet = 0; deck }
 
 let update_pot state amount = state.pot <- state.pot + amount
 let get_pot state = state.pot
@@ -20,6 +21,9 @@ let get_community_cards state = state.community_cards
 
 let set_community_cards state cards =
   state.community_cards <- state.community_cards @ cards
+
+let get_deck state = state.deck
+let set_deck state deck = state.deck <- deck
 
 let call state player amount =
   set_contributions player amount;

@@ -27,3 +27,18 @@ val draw : t list -> t * t list
 val string_of_card : t -> string
 (** [string_of_card card] returns a string representation of [card], displaying
     both the suit and rank in a readable format. *)
+
+val size : t list -> int
+(** [size deck] returns the length of the [deck]. *)
+
+val print_two_card : t -> t -> unit
+(** [print card1 card2] prints the [card1] and [card2] in visual format. *)
+
+val print_three_card : t list -> unit
+(** [print cardlist] prints the [cardlist] of size 3 in visual format. *)
+
+val print_four_card : t list -> unit
+(** [print cardlist] prints the [cardlist] of size 4 in visual format. *)
+
+val print_five_card : t list -> unit
+(** [print cardlist] prints the [cardlist] of size 5 in visual format. *)

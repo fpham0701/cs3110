@@ -45,8 +45,8 @@ let bet_round state =
   ignore (read_line ())
 
 let start_game player_names =
-  let players = create_players_with_names (List.rev player_names) in
-  create_state players
+  let players, deck = create_players_with_names (List.rev player_names) in
+  create_state players deck
 
 let game_loop state =
   let active_players = get_players state in
@@ -60,40 +60,42 @@ let game_loop state =
     bet_round state;
 
   (* Reveal the flop (first 3 community cards) *)
-  let deck = create_deck () in
-  let flop, remaining_deck = split_at 3 deck in
+  let deck = get_deck state in
+  let card1, deck1 = draw deck in
+  let card2, deck2 = draw deck1 in
+  let card3, deck3 = draw deck2 in
+  let flop = [ card1; card2; card3 ] in
   set_community_cards state flop;
+  set_deck state deck3;
   print_endline ("\n" ^ String.make 50 '\n');
-  print_endline "=========================================";
-  Printf.printf "            Flop: %s\n"
-    (String.concat ", " (List.map Cards.string_of_card flop));
-  print_endline "=========================================\n";
+  print_endline "===================================================";
+  print_three_card flop;
+  print_endline "===================================================";
 
   (* Another betting phase after the flop *)
   bet_round state;
 
   (* Reveal the turn (4th community card) *)
-  let turn, remaining_deck = split_at 1 remaining_deck in
-  set_community_cards state turn;
+  let deck = get_deck state in
+  let turn, deck4 = draw deck in
+  set_community_cards state [ turn ];
+  set_deck state deck4;
   print_endline ("\n" ^ String.make 50 '\n');
-  print_endline "=========================================";
-  Printf.printf "          Turn: %s\n"
-    (String.concat ", "
-       (List.map Cards.string_of_card (get_community_cards state)));
-  print_endline "=========================================\n";
+  print_endline "=====================================================";
+  print_four_card (get_community_cards state);
+  print_endline "=====================================================";
 
   (* Another betting phase after the turn *)
   bet_round state;
 
   (* Reveal the river (5th community card) *)
-  let river, _ = split_at 1 remaining_deck in
-  set_community_cards state river;
+  let deck = get_deck state in
+  let river, _ = draw deck in
+  set_community_cards state [ river ];
   print_endline ("\n" ^ String.make 50 '\n');
-  print_endline "=========================================";
-  Printf.printf "         River: %s\n"
-    (String.concat ", "
-       (List.map Cards.string_of_card (get_community_cards state)));
-  print_endline "=========================================\n";
+  print_endline "========================================================";
+  print_five_card (get_community_cards state);
+  print_endline "========================================================";
 
   (* Final betting phase after the river *)
   bet_round state;
@@ -101,5 +103,5 @@ let game_loop state =
   print_endline "Enter who the winner is: ";
 
   let winner = read_line () in
-  Printf.printf "Congrats to %s!" winner;
-  Printf.printf "You have won %d!" (get_pot state)
+  Printf.printf "\nCongrats to %s!\n" winner;
+  Printf.printf "You have won %d!\n\n" (get_pot state)

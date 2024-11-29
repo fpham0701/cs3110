@@ -3,10 +3,10 @@ open Players
 type t
 (** Abstract type representing the state of the poker game. *)
 
-val create_state : Players.t list -> t
-(** [create_state players] initializes a new game state with the given list of
-    [players], an empty pot, no community cards, an empty contributions table,
-    and a shuffled deck. *)
+val create_state : Players.t list -> Cards.t list -> t
+(** [create_state players deck] initializes a new game state with the given list
+    of [players], an empty pot, no community cards, an empty contributions
+    table, and the [deck]. *)
 
 val update_pot : t -> int -> unit
 (** [update_pot state amount] adds [amount] to the pot in the given game
@@ -32,6 +32,12 @@ val get_community_cards : t -> Cards.t list
 val set_community_cards : t -> Cards.t list -> unit
 (** [set_community_cards state flop] sets the game [state]'s community cards to
     be [flop]. *)
+
+val get_deck : t -> Cards.t list
+(** [get_deck state] reutrns the game [state]'s remaining deck of cards *)
+
+val set_deck : t -> Cards.t list -> unit
+(** [set_deck state deck] sets the game [state]'s deck of cards to be [deck]. *)
 
 val call : t -> Players.t -> int -> unit
 (** [call state player amount] allows the given [player] to call by matching the

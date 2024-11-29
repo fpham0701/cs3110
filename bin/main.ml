@@ -42,9 +42,8 @@ let reveal_player_cards players =
         clear_screen ();
         Printf.printf "Player: %s\n" (Poker.Players.get_name player);
         let card1, card2 = Poker.Players.get_card player in
-        Printf.printf "Cards: %s, %s\n"
-          (Poker.Cards.string_of_card card1)
-          (Poker.Cards.string_of_card card2);
+        print_endline "Cards: ";
+        Poker.Cards.print_two_card card1 card2;
         print_endline "\nPress Enter to continue.";
         ignore (read_line ());
         clear_screen ();

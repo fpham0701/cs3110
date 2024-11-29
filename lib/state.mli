@@ -23,6 +23,9 @@ val get_players : t -> Players.t list
 (** [get_players state] returns the list of active players in the current game
     [state]. *)
 
+val get_community_cards : t -> Cards.t list
+(** [get_community_cards state] returns the game [state]'s community cards. *)
+
 val set_community_cards : t -> Cards.t list -> unit
 (** [set_community_cards state flop] sets the game [state]'s community cards to
     be [flop]. *)

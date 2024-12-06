@@ -102,6 +102,9 @@ let rank_to_string = function
   | King -> "K"
   | Ace -> "A"
 
+let get_suit (card : t) : suit = fst card
+let get_rank (card : t) : rank = snd card
+
 let print_two_card (card1 : t) (card2 : t) =
   let suit1, rank1 = card1 in
   let suit_symbol1 = suit_to_symbol suit1 in

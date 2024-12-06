@@ -5,6 +5,13 @@ open Poker.Cards
 let test_all_suits _ =
   assert_equal ~msg:"All suits should be four" 4 (List.length (all_suits ()))
 
+let rec find_card suit rank deck =
+  match deck with
+  | [] -> failwith "Card not found"
+  | card :: rest ->
+      if get_suit card = suit && get_rank card = rank then card
+      else find_card suit rank rest
+
 let test_all_ranks _ =
   assert_equal ~msg:"All ranks should be thirteen" 13
     (List.length (all_ranks ()))
@@ -15,6 +22,16 @@ let test_deck = Poker.Cards.create_deck ()
 let make_deck_length_test =
   "52 unique cards" >:: fun _ ->
   assert_equal 52 (List.length test_deck) ~msg:"Deck should contain 52 cards."
+
+let test_draw_empty_deck _ =
+  assert_raises (Failure "Deck is empty") (fun () -> draw [])
+
+let test_string_of_card _ =
+  let card =
+    find_card Poker.Cards.Heart Poker.Cards.Ace (Poker.Cards.create_deck ())
+  in
+  assert_equal ~msg:"String of Ace of Hearts should be 'A♥'" "A♥"
+    (Poker.Cards.string_of_card card)
 
 (** [draw_two_cards_test] checks that two draws cards are unique and valid. *)
 let draw_two_cards_test =
@@ -50,11 +67,43 @@ let test_draw _ =
     (size deck - 1)
     (size new_deck)
 
+let test_multiple_draws _ =
+  let deck = create_deck () in
+  let _, deck1 = draw deck in
+  let _, deck2 = draw deck1 in
+  let _, deck3 = draw deck2 in
+  assert_equal ~msg:"Deck size after 3 draws should be 49" 49 (size deck3)
+
 let test_size _ =
   let deck = create_deck () in
   assert_equal ~msg:"Initial deck size should be 52" 52 (size deck);
   let _, smaller_deck = draw deck in
   assert_equal ~msg:"Deck size after draw should be 51" 51 (size smaller_deck)
+
+let test_all_suits_correctness _ =
+  assert_bool "All suits should contain Spade, Heart, Clover, Club"
+    (List.sort compare (all_suits ())
+    = List.sort compare [ Spade; Heart; Clover; Club ])
+
+let test_all_ranks_correctness _ =
+  assert_bool "All ranks should contain all ranks from Two to Ace"
+    (List.sort compare (all_ranks ())
+    = List.sort compare
+        [
+          Two;
+          Three;
+          Four;
+          Five;
+          Six;
+          Seven;
+          Eight;
+          Nine;
+          Ten;
+          Jack;
+          Queen;
+          King;
+          Ace;
+        ])
 
 (* Card Test suite *)
 let card_tests =
@@ -68,6 +117,11 @@ let card_tests =
          "test_random_two_cards" >:: test_random_two_cards;
          "test_draw" >:: test_draw;
          "test_size" >:: test_size;
+         "test draw empty deck" >:: test_draw_empty_deck;
+         "test string of card" >:: test_string_of_card;
+         "test multiple draws" >:: test_multiple_draws;
+         "test all suits correctness" >:: test_all_suits_correctness;
+         "test all ranks correctness" >:: test_all_ranks_correctness;
        ]
 
 let _ = run_test_tt_main card_tests

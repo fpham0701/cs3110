@@ -1,6 +1,9 @@
 open OUnit2
 open Poker.Players
 open Poker.Cards
+open Poker.Actions
+open Poker.Round
+open Poker.State
 
 let test_all_suits _ =
   assert_equal ~msg:"All suits should be four" 4 (List.length (all_suits ()))
@@ -80,6 +83,11 @@ let test_size _ =
   let _, smaller_deck = draw deck in
   assert_equal ~msg:"Deck size after draw should be 51" 51 (size smaller_deck)
 
+let test_update_pot _ =
+  let state = create_state [] [] in
+  update_pot state 5;
+  assert_equal ~printer:string_of_int 5 (get_pot state)
+
 let test_all_suits_correctness _ =
   assert_bool "All suits should contain Spade, Heart, Clover, Club"
     (List.sort compare (all_suits ())
@@ -117,6 +125,7 @@ let card_tests =
          "test_random_two_cards" >:: test_random_two_cards;
          "test_draw" >:: test_draw;
          "test_size" >:: test_size;
+         "test_update_pot" >:: test_update_pot;
          "test draw empty deck" >:: test_draw_empty_deck;
          "test string of card" >:: test_string_of_card;
          "test multiple draws" >:: test_multiple_draws;

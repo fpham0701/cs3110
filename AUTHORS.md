@@ -9,3 +9,4 @@ Collaborators:
 - Used ChatGPT 4 (from OpenAI) on 11/28 to resolve more printing issues with card
 - Used ChatGPT 4 (from OpenAI) on 11/28 to help format card printing as well as fix state bugs
 - Used ChatGPT 4 (from OpenAI) on 11/28 to aid with debugging player module build issues
+- Used ChatGPT 4 (from OpenAI) on 12/9 for testing the actions

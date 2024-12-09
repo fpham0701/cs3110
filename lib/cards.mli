@@ -44,6 +44,12 @@ val string_of_card : t -> string
 (** [string_of_card card] returns a string representation of [card], displaying
     both the suit and rank in a readable format. *)
 
+val rank_to_string : rank -> string
+(** [rank_to_string] maps type rank to a string *)
+
+val suit_to_symbol : suit -> string
+(** [suit_to_symbol] maps type suit to a string *)
+
 val size : t list -> int
 (** [size deck] returns the length of the [deck]. *)
 

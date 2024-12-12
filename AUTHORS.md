@@ -11,3 +11,4 @@ Collaborators:
 - Used ChatGPT 4 (from OpenAI) on 11/28 to aid with debugging player module build issues
 - Used ChatGPT 4 (from OpenAI) on 12/9 for testing the actions
 - Used ChatGPT 4 (from OpenAI) on 12/12 for simulating the the actions in the test file
+- Used ChatGPT 4 (from OpenAI) on 12/2 to help implement winning algorithm and how to go about it

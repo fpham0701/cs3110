@@ -27,6 +27,7 @@ let rank_value = function
   | King -> 13
   | Ace -> 14
 
+(** [compare_ranks r1 r2] compares the ranks of [r1] and [r2] *)
 let compare_ranks r1 r2 = compare (rank_value r1) (rank_value r2)
 
 (** [sort_by_rank cards] sorts [cards] by ascending rank. *)
@@ -193,7 +194,6 @@ let combinations_7_choose_5 cards =
   in
   choose 5 cards
 
-(** [best_hand_of_seven cards7] takes the best 5-card hand of [cards7]*)
 let best_hand_of_seven cards7 =
   let all_5_combos = combinations_7_choose_5 cards7 in
   let best =

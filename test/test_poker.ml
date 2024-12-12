@@ -103,6 +103,191 @@ let test_all_ranks_correctness _ =
           Ace;
         ])
 
+let test_all_suits_2 _ =
+  let suits = all_suits () in
+  assert_equal ~msg:"Expected 4 suits in all_suits" 4 (List.length suits);
+  assert_bool "Spade should be in all suits" (List.mem Spade suits);
+  assert_bool "Heart should be in all suits" (List.mem Heart suits);
+  assert_bool "Clover should be in all suits" (List.mem Clover suits);
+  assert_bool "Club should be in all suits" (List.mem Club suits)
+
+let test_all_ranks_2 _ =
+  let ranks = all_ranks () in
+  assert_equal ~msg:"Expected 13 ranks in all_ranks" 13 (List.length ranks);
+  assert_bool "Two should be in all ranks" (List.mem Two ranks);
+  assert_bool "Ace should be in all ranks" (List.mem Ace ranks)
+
+let test_create_deck_2 _ =
+  let deck = create_deck () in
+  assert_equal ~msg:"Expected deck to have 52 cards" 52 (List.length deck);
+  let unique_cards = List.sort_uniq compare deck in
+  assert_equal ~msg:"Expected all 52 cards in the deck to be unique" 52
+    (List.length unique_cards)
+
+let test_random_two_cards_2 _ =
+  let card1, card2 = random_two_cards () in
+  assert_bool "First random card should be valid"
+    (List.mem card1 (create_deck ()));
+  assert_bool "Second random card should be valid"
+    (List.mem card2 (create_deck ()))
+
+let test_draw_2 _ =
+  let deck = create_deck () in
+  let card, new_deck = draw deck in
+  assert_bool "Drawn card should be from the deck" (List.mem card deck);
+  assert_equal ~msg:"Expected new deck to have 51 cards after a draw" 51
+    (List.length new_deck);
+  assert_bool "Drawn card should not be in the new deck"
+    (not (List.mem card new_deck))
+
+let test_string_of_card_2 _ =
+  let (card : Poker.Cards.t) = Poker.Cards.create_card "spade" "ace" in
+  let card_str = string_of_card card in
+  assert_equal ~msg:"Expected string representation of Ace of Spades to be A♠"
+    "A♠" card_str
+
+let test_match_rank _ =
+  assert_equal ~msg:"Expected rank to be Two" Two (match_rank "two");
+  assert_equal ~msg:"Expected rank to be Three" Three (match_rank "three");
+  assert_equal ~msg:"Expected rank to be Four" Four (match_rank "four");
+  assert_equal ~msg:"Expected rank to be Five" Five (match_rank "five");
+  assert_equal ~msg:"Expected rank to be Six" Six (match_rank "six");
+  assert_equal ~msg:"Expected rank to be Seven" Seven (match_rank "seven");
+  assert_equal ~msg:"Expected rank to be Eight" Eight (match_rank "eight");
+  assert_equal ~msg:"Expected rank to be Nine" Nine (match_rank "nine");
+  assert_equal ~msg:"Expected rank to be Ten" Ten (match_rank "ten");
+  assert_equal ~msg:"Expected rank to be Jack" Jack (match_rank "jack");
+  assert_equal ~msg:"Expected rank to be Queen" Queen (match_rank "queen");
+  assert_equal ~msg:"Expected rank to be King" King (match_rank "king");
+  assert_equal ~msg:"Expected rank to be Ace" Ace (match_rank "ace");
+  assert_raises (Invalid_argument "Incorrect Card Rank") (fun () ->
+      match_rank "invalid_rank")
+
+let test_match_suit _ =
+  assert_equal ~msg:"Expected suit to be Spade" Spade (match_suit "spade");
+  assert_equal ~msg:"Expected suit to be Heart" Heart (match_suit "heart");
+  assert_equal ~msg:"Expected suit to be Clover" Clover (match_suit "clover");
+  assert_equal ~msg:"Expected suit to be Club" Club (match_suit "club");
+  assert_raises (Invalid_argument "Incorrect Card Suit") (fun () ->
+      match_suit "invalid_suit")
+
+let test_create_card_and_match _ =
+  let deck = create_deck () in
+  assert_bool "Deck should contain (Spade, Ace)"
+    (List.mem (Poker.Cards.create_card "spade" "ace") deck);
+  assert_bool "Deck should contain (Heart, Two)"
+    (List.mem (Poker.Cards.create_card "heart" "two") deck);
+  assert_bool "Deck should contain (Club, Ten)"
+    (List.mem (Poker.Cards.create_card "club" "ten") deck);
+  assert_bool "Deck should contain (Clover, Queen)"
+    (List.mem (Poker.Cards.create_card "clover" "queen") deck);
+  assert_bool "Deck should contain (Spade, King)"
+    (List.mem (Poker.Cards.create_card "spade" "king") deck);
+  assert_bool "Deck should contain (Heart, Jack)"
+    (List.mem (Poker.Cards.create_card "heart" "jack") deck);
+  assert_bool "Deck should contain (Club, Four)"
+    (List.mem (Poker.Cards.create_card "club" "four") deck);
+  assert_bool "Deck should contain (Clover, Nine)"
+    (List.mem (Poker.Cards.create_card "clover" "nine") deck);
+  assert_equal ~msg:"Deck should contain 52 unique cards" 52
+    (List.length (List.sort_uniq compare deck))
+
+let test_print_two_card _ =
+  let card1 = Poker.Cards.create_card "heart" "ace" in
+  let card2 = Poker.Cards.create_card "spade" "ten" in
+  let expected_output =
+    "\n\
+     ┌─────────┐      ┌─────────┐\n\
+     │ A       │      │ 10      │\n\
+     │         │      │         │\n\
+     │    ♥    │      │    ♠    │\n\
+     │         │      │         │\n\
+     │      A  │      │      10 │\n\
+     └─────────┘      └─────────┘\n"
+  in
+  let actual_output = print_two_card card1 card2 in
+  assert_equal expected_output actual_output
+
+let test_print_three_card _ =
+  let card1 = Poker.Cards.create_card "heart" "ace" in
+  let card2 = Poker.Cards.create_card "spade" "ten" in
+  let card3 = Poker.Cards.create_card "club" "king" in
+  let cardlist = [ card1; card2; card3 ] in
+  let expected_output =
+    "\n\
+     ┌─────────┐      ┌─────────┐      ┌─────────┐\n\
+     │ A       │      │ 10      │      │ K       │\n\
+     │         │      │         │      │         │\n\
+     │    ♥    │      │    ♠    │      │    ♦    │\n\
+     │         │      │         │      │         │\n\
+     │      A  │      │      10 │      │      K  │\n\
+     └─────────┘      └─────────┘      └─────────┘\n"
+  in
+  let actual_output = print_three_card cardlist in
+  assert_equal expected_output actual_output
+
+let test_print_four_card _ =
+  let card1 = Poker.Cards.create_card "heart" "eight" in
+  let card2 = Poker.Cards.create_card "clover" "two" in
+  let card3 = Poker.Cards.create_card "club" "three" in
+  let card4 = Poker.Cards.create_card "spade" "five" in
+  let cardlist = [ card1; card2; card3; card4 ] in
+
+  let expected_output_part1 =
+    "\n\
+     |      ┌─────────┐      ┌─────────┐\n\
+     |      │ 8       │      │ 2       │\n\
+     |      │         │      │         │\n\
+     |      │    ♥    │      │    ♣    │\n\
+     |      │         │      │         │\n\
+     |      │      8  │      │      2  │\n\
+     |      └─────────┘      └─────────┘\n"
+  in
+  let expected_output_part2 =
+    "\n\
+     |           ┌─────────┐      ┌─────────┐\n\
+     |           │ 3       │      │ 5       │\n\
+     |           │         │      │         │\n\
+     |           │     ♦   │      │    ♠    │\n\
+     |           │         │      │         │\n\
+     |           │      3  │      │      5  │\n\
+     |           └─────────┘      └─────────┘\n"
+  in
+  let actual_output_part1, actual_output_part2 = print_four_card cardlist in
+  assert_equal expected_output_part1 actual_output_part1;
+  assert_equal expected_output_part2 actual_output_part2
+
+let test_print_five_card _ =
+  let card1 = Poker.Cards.create_card "heart" "four" in
+  let card2 = Poker.Cards.create_card "spade" "six" in
+  let card3 = Poker.Cards.create_card "club" "jack" in
+  let card4 = Poker.Cards.create_card "clover" "two" in
+  let card5 = Poker.Cards.create_card "club" "seven" in
+  let cardlist = [ card1; card2; card3; card4; card5 ] in
+  let expected_output_part1 =
+    "\n\
+     |   ┌─────────┐      ┌─────────┐      ┌─────────┐\n\
+     |   │ 4       │      │ 6       │      │ J       │\n\
+     |   │         │      │         │      │         │\n\
+     |   │    ♥    │      │    ♠    │      │    ♦    │\n\
+     |   │         │      │         │      │         │\n\
+     |   │      4  │      │      6  │      │      J  │\n\
+     |   └─────────┘      └─────────┘      └─────────┘\n"
+  in
+  let expected_output_part2 =
+    "\n\
+     |            ┌─────────┐      ┌─────────┐\n\
+     |            │ 2       │      │ 7       │\n\
+     |            │         │      │         │\n\
+     |            │    ♣    │      │    ♦    │\n\
+     |            │         │      │         │\n\
+     |            │      2  │      │      7  │\n\
+     |            └─────────┘      └─────────┘\n"
+  in
+  let actual_output_part1, actual_output_part2 = print_five_card cardlist in
+  assert_equal expected_output_part1 actual_output_part1;
+  assert_equal expected_output_part2 actual_output_part2
+
 (* Tests for State Module *)
 
 let test_update_pot _ =
@@ -317,8 +502,21 @@ let tests =
          "draw_two_cards_test" >:: draw_two_cards_test;
          "test_create_deck" >:: test_create_deck;
          "test_random_two_cards" >:: test_random_two_cards;
+         "test_all_suits_2" >:: test_all_suits_2;
+         "test_all_ranks_2" >:: test_all_ranks_2;
+         "test_create_deck_2" >:: test_create_deck_2;
+         "test_random_two_cards_2" >:: test_random_two_cards_2;
+         "test_string_of_card_2" >:: test_string_of_card_2;
          "test_draw" >:: test_draw;
+         "test_draw_2" >:: test_draw_2;
+         "test_match_rank" >:: test_match_rank;
+         "test_match_suit" >:: test_match_suit;
+         "test_create_card_and_match" >:: test_create_card_and_match;
          "test_size" >:: test_size;
+         "test_print_two_card" >:: test_print_two_card;
+         "test_print_three_card" >:: test_print_three_card;
+         "test_print_four_card" >:: test_print_four_card;
+         "test_print_five_card" >:: test_print_five_card;
          "test_update_pot" >:: test_update_pot;
          "test_current_bet" >:: test_get_current_bet;
          "test_get_community_cards" >:: test_get_community_cards;

@@ -1,9 +1,9 @@
-(** Abstract type representing a player's action in a poker game *)
 type t =
   | Call
   | Check
   | Fold
   | Raise of int
+      (** Abstract type representing a player's action in a poker game *)
 
 val action : Players.t -> State.t -> string list -> t
 (** [action options] prompts the user to choose an action for [player] for the

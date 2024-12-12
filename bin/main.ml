@@ -300,7 +300,8 @@ let game_loop state =
   set_deck state deck3;
   print_endline ("\n" ^ String.make 50 '\n');
   print_endline "===================================================";
-  print_three_card flop;
+  let printing_card = print_three_card flop in
+  print_endline printing_card;
   print_endline "===================================================";
 
   (* Another betting phase after the flop *)
@@ -313,7 +314,11 @@ let game_loop state =
   set_deck state deck4;
   print_endline ("\n" ^ String.make 50 '\n');
   print_endline "=====================================================";
-  print_four_card (get_community_cards state);
+  let printing_card1, printing_card2 =
+    print_four_card (get_community_cards state)
+  in
+  print_endline printing_card1;
+  print_endline printing_card2;
   print_endline "=====================================================";
 
   (* Another betting phase after the turn *)
@@ -325,7 +330,11 @@ let game_loop state =
   set_community_cards state [ river ];
   print_endline ("\n" ^ String.make 50 '\n');
   print_endline "========================================================";
-  print_five_card (get_community_cards state);
+  let printing_card1, printing_card2 =
+    print_four_card (get_community_cards state)
+  in
+  print_endline printing_card1;
+  print_endline printing_card2;
   print_endline "========================================================";
 
   (* Final betting phase after the river *)
@@ -415,7 +424,8 @@ let reveal_player_cards players =
         Printf.printf "Player: %s\n" (Poker.Players.get_name player);
         let card1, card2 = Poker.Players.get_card player in
         print_endline "Cards: ";
-        Poker.Cards.print_two_card card1 card2;
+        let printing_card = Poker.Cards.print_two_card card1 card2 in
+        print_endline printing_card;
         print_endline "\nPress Enter to continue.";
         ignore (read_line ());
         clear_screen ();

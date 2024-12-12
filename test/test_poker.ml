@@ -325,32 +325,77 @@ let test_suit_to_symbol _ =
   assert_equal "♦" (suit_to_symbol Club)
 
 (* actions.ml *)
-let test_actions _ =
-  let players, deck = create_players_with_names [ "Alice" ] in
+let simulate_input inputs f =
+  let original_stdin = Unix.dup Unix.stdin in
+  let temp_read, temp_write = Unix.pipe () in
+  Unix.dup2 temp_read Unix.stdin;
+  let write_inputs () =
+    List.iter
+      (fun input ->
+        let input_bytes = Bytes.of_string (input ^ "\n") in
+        let _ =
+          Unix.write temp_write input_bytes 0 (Bytes.length input_bytes)
+        in
+        ())
+      inputs
+  in
+  write_inputs ();
+  let result = f () in
+  Unix.close temp_read;
+  Unix.close temp_write;
+  Unix.dup2 original_stdin Unix.stdin;
+  Unix.close original_stdin;
+  result
+
+let setup_game_state () =
+  let players, deck = create_players_with_names [ "Alice"; "Bob" ] in
   let state = create_state players deck in
-  let player = List.hd players in
+  (state, List.hd players)
 
-  assert_equal (get_name player) "Alice" ~msg:"Player name should be Alice";
-  assert_equal (get_pot state) 0 ~msg:"Initial pot should be 0";
-  assert_equal (get_current_bet state) 0 ~msg:"Initial bet should be 0";
+let test_valid_call _ =
+  simulate_input [ "call" ] (fun () ->
+      let state, player = setup_game_state () in
+      assert_equal Call
+        (action player state [ "call" ])
+        ~msg:"Should accept valid call action")
 
-  (try
-     let options = [ "raise"; "fold" ] in
-     let _ = action player state options in
-     assert_bool "Action should be executable" true
-   with End_of_file -> ());
+let test_valid_check _ =
+  simulate_input [ "check" ] (fun () ->
+      let state, player = setup_game_state () in
+      set_contributions player (get_current_bet state);
+      assert_equal Check
+        (action player state [ "check" ])
+        ~msg:"Should accept valid check action")
 
-  (try
-     let options = [ "fold" ] in
-     let _ = action player state options in
-     assert_bool "Fold action should be executable" true
-   with End_of_file -> ());
+let test_valid_fold _ =
+  simulate_input [ "fold" ] (fun () ->
+      let state, player = setup_game_state () in
+      assert_equal Fold
+        (action player state [ "fold" ])
+        ~msg:"Should accept valid fold action")
 
-  try
-    let options = [ "check"; "fold" ] in
-    let _ = action player state options in
-    assert_bool "Check action should be executable" true
-  with End_of_file -> ()
+let test_valid_raise _ =
+  simulate_input [ "raise"; "10" ] (fun () ->
+      let state, player = setup_game_state () in
+      assert_equal (Raise 10)
+        (action player state [ "raise" ])
+        ~msg:"Should accept valid raise action with amount")
+
+let test_invalid_check_with_unmatched_contribution _ =
+  simulate_input [ "check"; "fold" ] (fun () ->
+      let state, player = setup_game_state () in
+      raise_bet state player 10;
+      set_contributions player 0;
+      assert_equal Fold
+        (action player state [ "check"; "fold" ])
+        ~msg:"Should reject check when contribution doesn't match current bet")
+
+let test_invalid_action_then_valid _ =
+  simulate_input [ "invalid_action"; "fold" ] (fun () ->
+      let state, player = setup_game_state () in
+      assert_equal Fold
+        (action player state [ "fold" ])
+        ~msg:"Should reject invalid action and accept subsequent valid action")
 
 let tests =
   "Poker Test Suite"
@@ -388,7 +433,13 @@ let tests =
          "test_draw_all_cards_and_validate" >:: test_draw_all_cards_and_validate;
          "test_rank_to_string" >:: test_rank_to_string;
          "test_suit_to_symbol" >:: test_suit_to_symbol;
-         "test_actions" >:: test_actions;
+         "test_valid_call" >:: test_valid_call;
+         "test_valid_check" >:: test_valid_check;
+         "test_valid_fold" >:: test_valid_fold;
+         "test_valid_raise" >:: test_valid_raise;
+         "test_invalid_check_with_unmatched_contribution"
+         >:: test_invalid_check_with_unmatched_contribution;
+         "test_invalid_action_then_valid" >:: test_invalid_action_then_valid;
        ]
 
 let () = run_test_tt_main tests

@@ -23,4 +23,3 @@ let create_players_with_names names =
         { name; cards; contribution = 0 } :: create_players rest
   in
   (create_players names, deck)
-

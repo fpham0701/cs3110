@@ -20,24 +20,22 @@ let test_all_ranks _ =
   assert_equal ~msg:"All ranks should be thirteen" 13
     (List.length (all_ranks ()))
 
-let test_deck = Poker.Cards.create_deck ()
+let test_deck = create_deck ()
 
 let make_deck_length_test _ =
-  assert_equal 52 (List.length test_deck) ~msg:"Deck should contain 52 cards."
+  assert_equal 52 (List.length test_deck) ~msg:"Deck should contain 52 "
 
 let test_draw_empty_deck _ =
   assert_raises (Failure "Deck is empty") (fun () -> draw [])
 
 let test_string_of_card _ =
-  let card =
-    find_card Poker.Cards.Heart Poker.Cards.Ace (Poker.Cards.create_deck ())
-  in
+  let card = find_card Heart Ace (create_deck ()) in
   assert_equal ~msg:"String of Ace of Hearts should be 'A♥'" "A♥"
-    (Poker.Cards.string_of_card card)
+    (string_of_card card)
 
 let draw_two_cards_test _ =
-  let draw1 = Poker.Cards.draw test_deck in
-  let draw2 = Poker.Cards.draw (snd draw1) in
+  let draw1 = draw test_deck in
+  let draw2 = draw (snd draw1) in
   let card1 = fst draw1 in
   let card2 = fst draw2 in
   let new_deck = snd draw2 in
@@ -199,19 +197,18 @@ let test_get_deck _ =
     (not (List.mem card2 deck_after_two_draws))
 
 let test_draw_all_cards_and_validate _ =
-  let deck = Poker.Cards.create_deck () in
+  let deck = create_deck () in
   let rec draw_all_cards deck acc =
-    if Poker.Cards.size deck = 0 then List.rev acc
+    if size deck = 0 then List.rev acc
     else
-      let card, new_deck = Poker.Cards.draw deck in
+      let card, new_deck = draw deck in
       draw_all_cards new_deck (card :: acc)
   in
   let all_cards = draw_all_cards deck [] in
-  assert_equal 52 (List.length all_cards)
-    ~msg:"The deck should contain 52 cards.";
+  assert_equal 52 (List.length all_cards) ~msg:"The deck should contain 52 ";
   List.iter
     (fun card ->
-      let card_str = Poker.Cards.string_of_card card in
+      let card_str = string_of_card card in
       assert_bool
         ("String representation of card " ^ card_str ^ " is not empty")
         (String.length card_str > 0))
@@ -238,11 +235,33 @@ let test_suit_to_symbol _ =
   assert_equal "♣" (suit_to_symbol Clover);
   assert_equal "♦" (suit_to_symbol Club)
 
-(* round.ml *)
-
 (* actions.ml *)
-let test_action _ = 
-  
+let test_actions _ =
+  let players, deck = create_players_with_names [ "Alice" ] in
+  let state = create_state players deck in
+  let player = List.hd players in
+
+  assert_equal (get_name player) "Alice" ~msg:"Player name should be Alice";
+  assert_equal (get_pot state) 0 ~msg:"Initial pot should be 0";
+  assert_equal (get_current_bet state) 0 ~msg:"Initial bet should be 0";
+
+  (try
+     let options = [ "raise"; "fold" ] in
+     let _ = action player state options in
+     assert_bool "Action should be executable" true
+   with End_of_file -> ());
+
+  (try
+     let options = [ "fold" ] in
+     let _ = action player state options in
+     assert_bool "Fold action should be executable" true
+   with End_of_file -> ());
+
+  try
+    let options = [ "check"; "fold" ] in
+    let _ = action player state options in
+    assert_bool "Check action should be executable" true
+  with End_of_file -> ()
 
 let tests =
   "Poker Test Suite"
@@ -271,6 +290,7 @@ let tests =
          "test_draw_all_cards_and_validate" >:: test_draw_all_cards_and_validate;
          "test_rank_to_string" >:: test_rank_to_string;
          "test_suit_to_symbol" >:: test_suit_to_symbol;
+         "test_actions" >:: test_actions;
        ]
 
 let () = run_test_tt_main tests

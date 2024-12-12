@@ -192,6 +192,102 @@ let test_create_card_and_match _ =
   assert_equal ~msg:"Deck should contain 52 unique cards" 52
     (List.length (List.sort_uniq compare deck))
 
+let test_print_two_card _ =
+  let card1 = Poker.Cards.create_card "heart" "ace" in
+  let card2 = Poker.Cards.create_card "spade" "ten" in
+  let expected_output =
+    "\n\
+     ┌─────────┐      ┌─────────┐\n\
+     │ A       │      │ 10      │\n\
+     │         │      │         │\n\
+     │    ♥    │      │    ♠    │\n\
+     │         │      │         │\n\
+     │      A  │      │      10 │\n\
+     └─────────┘      └─────────┘\n"
+  in
+  let actual_output = print_two_card card1 card2 in
+  assert_equal expected_output actual_output
+
+let test_print_three_card _ =
+  let card1 = Poker.Cards.create_card "heart" "ace" in
+  let card2 = Poker.Cards.create_card "spade" "ten" in
+  let card3 = Poker.Cards.create_card "club" "king" in
+  let cardlist = [ card1; card2; card3 ] in
+  let expected_output =
+    "\n\
+     ┌─────────┐      ┌─────────┐      ┌─────────┐\n\
+     │ A       │      │ 10      │      │ K       │\n\
+     │         │      │         │      │         │\n\
+     │    ♥    │      │    ♠    │      │    ♦    │\n\
+     │         │      │         │      │         │\n\
+     │      A  │      │      10 │      │      K  │\n\
+     └─────────┘      └─────────┘      └─────────┘\n"
+  in
+  let actual_output = print_three_card cardlist in
+  assert_equal expected_output actual_output
+
+let test_print_four_card _ =
+  let card1 = Poker.Cards.create_card "heart" "eight" in
+  let card2 = Poker.Cards.create_card "clover" "two" in
+  let card3 = Poker.Cards.create_card "club" "three" in
+  let card4 = Poker.Cards.create_card "spade" "five" in
+  let cardlist = [ card1; card2; card3; card4 ] in
+
+  let expected_output_part1 =
+    "\n\
+     |      ┌─────────┐      ┌─────────┐\n\
+     |      │ 8       │      │ 2       │\n\
+     |      │         │      │         │\n\
+     |      │    ♥    │      │    ♣    │\n\
+     |      │         │      │         │\n\
+     |      │      8  │      │      2  │\n\
+     |      └─────────┘      └─────────┘\n"
+  in
+  let expected_output_part2 =
+    "\n\
+     |           ┌─────────┐      ┌─────────┐\n\
+     |           │ 3       │      │ 5       │\n\
+     |           │         │      │         │\n\
+     |           │     ♦   │      │    ♠    │\n\
+     |           │         │      │         │\n\
+     |           │      3  │      │      5  │\n\
+     |           └─────────┘      └─────────┘\n"
+  in
+  let actual_output_part1, actual_output_part2 = print_four_card cardlist in
+  assert_equal expected_output_part1 actual_output_part1;
+  assert_equal expected_output_part2 actual_output_part2
+
+let test_print_five_card _ =
+  let card1 = Poker.Cards.create_card "heart" "four" in
+  let card2 = Poker.Cards.create_card "spade" "six" in
+  let card3 = Poker.Cards.create_card "club" "jack" in
+  let card4 = Poker.Cards.create_card "clover" "two" in
+  let card5 = Poker.Cards.create_card "club" "seven" in
+  let cardlist = [ card1; card2; card3; card4; card5 ] in
+  let expected_output_part1 =
+    "\n\
+     |   ┌─────────┐      ┌─────────┐      ┌─────────┐\n\
+     |   │ 4       │      │ 6       │      │ J       │\n\
+     |   │         │      │         │      │         │\n\
+     |   │    ♥    │      │    ♠    │      │    ♦    │\n\
+     |   │         │      │         │      │         │\n\
+     |   │      4  │      │      6  │      │      J  │\n\
+     |   └─────────┘      └─────────┘      └─────────┘\n"
+  in
+  let expected_output_part2 =
+    "\n\
+     |            ┌─────────┐      ┌─────────┐\n\
+     |            │ 2       │      │ 7       │\n\
+     |            │         │      │         │\n\
+     |            │    ♣    │      │    ♦    │\n\
+     |            │         │      │         │\n\
+     |            │      2  │      │      7  │\n\
+     |            └─────────┘      └─────────┘\n"
+  in
+  let actual_output_part1, actual_output_part2 = print_five_card cardlist in
+  assert_equal expected_output_part1 actual_output_part1;
+  assert_equal expected_output_part2 actual_output_part2
+
 (* Tests for State Module *)
 
 let test_update_pot _ =
@@ -417,6 +513,10 @@ let tests =
          "test_match_suit" >:: test_match_suit;
          "test_create_card_and_match" >:: test_create_card_and_match;
          "test_size" >:: test_size;
+         "test_print_two_card" >:: test_print_two_card;
+         "test_print_three_card" >:: test_print_three_card;
+         "test_print_four_card" >:: test_print_four_card;
+         "test_print_five_card" >:: test_print_five_card;
          "test_update_pot" >:: test_update_pot;
          "test_current_bet" >:: test_get_current_bet;
          "test_get_community_cards" >:: test_get_community_cards;

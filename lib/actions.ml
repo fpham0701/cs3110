@@ -32,7 +32,11 @@ let action player state options =
     | "raise" when List.mem "raise" options ->
         print_endline "Enter the amount to raise:";
         let amount = int_of_string (read_line ()) in
-        if amount > 0 then Raise amount else prompt_action ()
+        if amount > 0 then Raise amount
+        else begin
+          print_endline "Player should not be raising by a non-positive value.";
+          prompt_action ()
+        end
     | _ ->
         print_endline "Invalid action. Please try again.";
         prompt_action ()

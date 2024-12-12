@@ -6,14 +6,14 @@ open Poker.State
 type hand_rank =
   | RoyalFlush
   | StraightFlush of rank
-  | FourOfAKind of rank * rank (* four-rank, kicker *)
-  | FullHouse of rank * rank (* three-rank, pair-rank *)
+  | FourOfAKind of rank * rank
+  | FullHouse of rank * rank
   | Flush of rank list
   | Straight of rank
-  | ThreeOfAKind of rank * rank list (* triple-rank, kickers *)
-  | TwoPair of rank * rank * rank (* high-pair-rank, low-pair-rank, kicker *)
-  | OnePair of rank * rank list (* pair-rank, kickers *)
-  | HighCard of rank list (* sorted descending by rank *)
+  | ThreeOfAKind of rank * rank list
+  | TwoPair of rank * rank * rank
+  | OnePair of rank * rank list
+  | HighCard of rank list
 
 let rank_value = function
   | Two -> 2
@@ -32,11 +32,11 @@ let rank_value = function
 
 let compare_ranks r1 r2 = compare (rank_value r1) (rank_value r2)
 
-(* Sort cards by ascending rank *)
+(** [sort_by_rank cards] sorts [cards] by ascending rank. *)
 let sort_by_rank cards =
   List.sort (fun c1 c2 -> compare_ranks (get_rank c1) (get_rank c2)) cards
 
-(* Check if all cards share the same suit *)
+(** [is_flush cards] checks if [cards] all share the same suit (flush). *)
 let is_flush cards =
   match cards with
   | [] -> false
@@ -44,7 +44,7 @@ let is_flush cards =
       let s = get_suit c in
       List.for_all (fun x -> get_suit x = s) cs
 
-(* Check if ranks form a regular straight *)
+(** [is_straight ranks] checks if the [ranks] forms a regular straight *)
 let is_straight ranks =
   match ranks with
   | [ r1; r2; r3; r4; r5 ] ->
@@ -58,14 +58,13 @@ let is_straight ranks =
       v2 = v1 + 1 && v3 = v2 + 1 && v4 = v3 + 1 && v5 = v4 + 1
   | _ -> false
 
-(* Check special case A-2-3-4-5 straight (Ace low) *)
+(** [is_wheel_straight ranks] checks if [ranks] is a specific corner case *)
 let is_wheel_straight ranks =
-  (* ranks are sorted ascending; check pattern [Ace; Five; Four; Three; Two] *)
   match ranks with
   | [ Ace; Five; Four; Three; Two ] -> true
   | _ -> false
 
-(* Count frequency of each rank in the 5 cards *)
+(** [rank_frequencies cards] counts the frequency of each in the [cards]. *)
 let rank_frequencies cards =
   let tbl = Hashtbl.create 7 in
   List.iter
@@ -75,19 +74,18 @@ let rank_frequencies cards =
         (1 + (Hashtbl.find_opt tbl r |> Option.value ~default:0)))
     cards;
   let freq_list = Hashtbl.fold (fun r count acc -> (r, count) :: acc) tbl [] in
-  (* Sort by frequency desc, then by rank desc *)
   List.sort
     (fun (r1, c1) (r2, c2) ->
       let c = compare c2 c1 in
       if c <> 0 then c else compare_ranks r2 r1)
     freq_list
 
-(* Extract ranks in descending order *)
+(* extract ranks in descending order *)
 let extract_ranks_desc cards =
   let ranks = List.map get_rank cards in
   List.sort (fun a b -> compare_ranks b a) ranks
 
-(* Main hand evaluation function *)
+(* main hand evaluation function *)
 let evaluate_hand cards =
   if List.length cards <> 5 then
     invalid_arg "evaluate_hand: must provide exactly 5 cards";
@@ -98,14 +96,9 @@ let evaluate_hand cards =
   let freq = rank_frequencies sorted_cards in
 
   match freq with
-  | [ (r1, 4); (r2, 1) ] ->
-      (* Four of a Kind *)
-      FourOfAKind (r1, r2)
-  | [ (r1, 3); (r2, 2) ] ->
-      (* Full House *)
-      FullHouse (r1, r2)
+  | [ (r1, 4); (r2, 1) ] -> FourOfAKind (r1, r2)
+  | [ (r1, 3); (r2, 2) ] -> FullHouse (r1, r2)
   | _ when flush_flag && straight_flag ->
-      (* Check for Royal Flush: T,J,Q,K,A or Wheel Straight Flush *)
       let ranks_desc = List.rev ranks_asc in
       let rv = List.map rank_value ranks_desc in
       if rv = [ 10; 11; 12; 13; 14 ] then RoyalFlush
@@ -121,27 +114,21 @@ let evaluate_hand cards =
       in
       Straight high
   | [ (r1, 3); (r2, 1); (r3, 1) ] ->
-      (* Three of a Kind *)
-      (* freq is sorted by freq desc, rank desc, so r1 is triple *)
       let kickers = List.sort (fun a b -> compare_ranks b a) [ r2; r3 ] in
       ThreeOfAKind (r1, kickers)
   | [ (r1, 2); (r2, 2); (r3, 1) ] ->
-      (* Two Pair *)
-      (* freq sorted by freq desc, rank desc means r1 >= r2 *)
       let pair_ranks = [ r1; r2 ] |> List.sort (fun a b -> compare_ranks b a) in
       TwoPair (List.nth pair_ranks 0, List.nth pair_ranks 1, r3)
   | [ (r1, 2); (r2, 1); (r3, 1); (r4, 1) ] ->
-      (* One Pair *)
       let kickers =
         [ r2; r3; r4 ] |> List.sort (fun a b -> compare_ranks b a)
       in
       OnePair (r1, kickers)
-  | _ ->
-      (* high card *)
-      HighCard (extract_ranks_desc sorted_cards)
+  | _ -> HighCard (extract_ranks_desc sorted_cards)
 
-(* Compare two hand_rank values to determine which is better. Returns > 0 if h1
-   is better than h2 = 0 if equal < 0 if h1 is worse than h2 *)
+(** [compare_hand_rank h1 h2] compares the hand rank values of [h1] and [h2] and
+    determines which is better. Returns > 0 if h1 is better than h2, 0 if equal,
+    < 0 if h1 is worse than h2 *)
 let compare_hand_rank h1 h2 =
   let rank_category = function
     | RoyalFlush -> 9
@@ -160,7 +147,6 @@ let compare_hand_rank h1 h2 =
   let c2 = rank_category h2 in
   if c1 <> c2 then compare c1 c2
   else
-    (* Tie-breaking within the same *)
     let compare_descending_ranks l1 l2 =
       let rec aux = function
         | [], [] -> 0
@@ -196,9 +182,10 @@ let compare_hand_rank h1 h2 =
         let cmp = compare_ranks p1 p2 in
         if cmp = 0 then compare_descending_ranks ks1 ks2 else cmp
     | HighCard ks1, HighCard ks2 -> compare_descending_ranks ks1 ks2
-    | _ -> 0 (* should never reach *)
+    | _ -> 0
 
-(* Generate every possible combination of 5 cards out of 7 *)
+(** [combinations_7_choose_5] generates every possible combination of 5 cards in
+    the 7 total [cards]. *)
 let combinations_7_choose_5 cards =
   let rec choose k lst =
     if k = 0 then [ [] ]
@@ -212,7 +199,7 @@ let combinations_7_choose_5 cards =
   in
   choose 5 cards
 
-(* Take the best 5-card hand out of the 7 cards *)
+(** [best_hand_of_seven cards7] takes the best 5-card hand of [cards7]*)
 let best_hand_of_seven cards7 =
   let all_5_combos = combinations_7_choose_5 cards7 in
   let best =
@@ -228,7 +215,7 @@ let best_hand_of_seven cards7 =
   in
   match best with
   | Some h -> h
-  | None -> failwith "No best hand found." (* Should never reach here *)
+  | None -> failwith "No best hand found."
 
 (** [split_at n] is a helper function that splits a [lst] at index [n] *)
 let split_at n lst =
@@ -278,7 +265,7 @@ let start_game player_names =
   create_state players deck
 
 (** [game_loop state] handles the main gameplay loop, where players take turns
-    in a round. The state is updated after every turn. *)
+    in a round. The [state] is updated after every turn. *)
 let game_loop state =
   let active_players = get_players state in
   if List.length active_players <= 1 then

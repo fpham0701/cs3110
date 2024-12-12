@@ -29,16 +29,21 @@ let action player state options =
           "You can only check if your contribution matches the current pot.";
         prompt_action ()
     | "fold" when List.mem "fold" options -> Fold
-    | "raise" when List.mem "raise" options ->
+    | "raise" when List.mem "raise" options -> begin
         print_endline "Enter the amount to raise:";
-        let amount = int_of_string (read_line ()) in
-        if amount > 0 then Raise amount
-        else begin
-          print_endline "Player should not be raising by a non-positive value.";
+        try
+          let amount = int_of_string (read_line ()) in
+          if amount > 0 then Raise amount
+          else begin
+            print_endline "Player should not be raising by a non-positive value";
+            prompt_action ()
+          end
+        with _ ->
+          print_endline "Invalid argument. Please enter a valid number.\n";
           prompt_action ()
-        end
+      end
     | _ ->
-        print_endline "Invalid action. Please try again.";
+        print_endline "Invalid action. Please try again.\n";
         prompt_action ()
   in
   prompt_action ()

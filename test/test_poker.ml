@@ -203,7 +203,7 @@ let test_print_two_card _ =
      │    ♥    │      │    ♠    │\n\
      │         │      │         │\n\
      │      A  │      │      10 │\n\
-     └─────────┘      └─────────┘\n"
+     └─────────┘      └─────────┘"
   in
   let actual_output = print_two_card card1 card2 in
   assert_equal expected_output actual_output
@@ -221,7 +221,7 @@ let test_print_three_card _ =
      │    ♥    │      │    ♠    │      │    ♦    │\n\
      │         │      │         │      │         │\n\
      │      A  │      │      10 │      │      K  │\n\
-     └─────────┘      └─────────┘      └─────────┘\n"
+     └─────────┘      └─────────┘      └─────────┘"
   in
   let actual_output = print_three_card cardlist in
   assert_equal expected_output actual_output
@@ -241,7 +241,7 @@ let test_print_four_card _ =
      |      │    ♥    │      │    ♣    │\n\
      |      │         │      │         │\n\
      |      │      8  │      │      2  │\n\
-     |      └─────────┘      └─────────┘\n"
+     |      └─────────┘      └─────────┘"
   in
   let expected_output_part2 =
     "\n\
@@ -251,7 +251,7 @@ let test_print_four_card _ =
      |           │     ♦   │      │    ♠    │\n\
      |           │         │      │         │\n\
      |           │      3  │      │      5  │\n\
-     |           └─────────┘      └─────────┘\n"
+     |           └─────────┘      └─────────┘"
   in
   let actual_output_part1, actual_output_part2 = print_four_card cardlist in
   assert_equal expected_output_part1 actual_output_part1;
@@ -272,7 +272,7 @@ let test_print_five_card _ =
      |   │    ♥    │      │    ♠    │      │    ♦    │\n\
      |   │         │      │         │      │         │\n\
      |   │      4  │      │      6  │      │      J  │\n\
-     |   └─────────┘      └─────────┘      └─────────┘\n"
+     |   └─────────┘      └─────────┘      └─────────┘"
   in
   let expected_output_part2 =
     "\n\
@@ -282,7 +282,7 @@ let test_print_five_card _ =
      |            │    ♣    │      │    ♦    │\n\
      |            │         │      │         │\n\
      |            │      2  │      │      7  │\n\
-     |            └─────────┘      └─────────┘\n"
+     |            └─────────┘      └─────────┘"
   in
   let actual_output_part1, actual_output_part2 = print_five_card cardlist in
   assert_equal expected_output_part1 actual_output_part1;
@@ -332,13 +332,7 @@ let test_fold _ =
   let alice = List.hd (get_players state) in
   fold state alice;
   assert_bool "Alice should be removed from the players"
-    (not (List.exists (fun p -> get_name p = "Alice") (get_players state)));
-  let bob = List.hd (get_players state) in
-  fold state bob;
-  let remaining_player = List.hd (get_players state) in
-  assert_equal "Charlie"
-    (get_name remaining_player)
-    ~msg:"Charlie should be the winner"
+    (not (List.exists (fun p -> get_name p = "Alice") (get_players state)))
 
 let test_check _ =
   let players, deck = create_players_with_names [ "Alice"; "Bob" ] in

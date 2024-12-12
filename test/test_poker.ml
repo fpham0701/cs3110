@@ -241,8 +241,6 @@ let test_suit_to_symbol _ =
 (* round.ml *)
 
 (* actions.ml *)
-let test_action _ = 
-  
 
 let tests =
   "Poker Test Suite"

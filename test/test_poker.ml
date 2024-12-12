@@ -3,6 +3,7 @@ open Poker.Players
 open Poker.Cards
 open Poker.Actions
 open Poker.State
+open Poker.Winning
 
 (* Tests for Card Module *)
 
@@ -79,9 +80,9 @@ let test_size _ =
   assert_equal ~msg:"Deck size after draw should be 51" 51 (size smaller_deck)
 
 let test_all_suits_correctness _ =
-  assert_bool "All suits should contain Spade, Heart, Clover, Club"
+  assert_bool "All suits should contain Spade, Heart, Clover, Diamond"
     (List.sort compare (all_suits ())
-    = List.sort compare [ Spade; Heart; Clover; Club ])
+    = List.sort compare [ Spade; Heart; Clover; Diamond ])
 
 let test_all_ranks_correctness _ =
   assert_bool "All ranks should contain all ranks from Two to Ace"
@@ -109,7 +110,7 @@ let test_all_suits_2 _ =
   assert_bool "Spade should be in all suits" (List.mem Spade suits);
   assert_bool "Heart should be in all suits" (List.mem Heart suits);
   assert_bool "Clover should be in all suits" (List.mem Clover suits);
-  assert_bool "Club should be in all suits" (List.mem Club suits)
+  assert_bool "Diamond should be in all suits" (List.mem Diamond suits)
 
 let test_all_ranks_2 _ =
   let ranks = all_ranks () in
@@ -167,7 +168,7 @@ let test_match_suit _ =
   assert_equal ~msg:"Expected suit to be Spade" Spade (match_suit "spade");
   assert_equal ~msg:"Expected suit to be Heart" Heart (match_suit "heart");
   assert_equal ~msg:"Expected suit to be Clover" Clover (match_suit "clover");
-  assert_equal ~msg:"Expected suit to be Club" Club (match_suit "club");
+  assert_equal ~msg:"Expected suit to be Diamond" Diamond (match_suit "diamond");
   assert_raises (Invalid_argument "Incorrect Card Suit") (fun () ->
       match_suit "invalid_suit")
 
@@ -177,16 +178,16 @@ let test_create_card_and_match _ =
     (List.mem (Poker.Cards.create_card "spade" "ace") deck);
   assert_bool "Deck should contain (Heart, Two)"
     (List.mem (Poker.Cards.create_card "heart" "two") deck);
-  assert_bool "Deck should contain (Club, Ten)"
-    (List.mem (Poker.Cards.create_card "club" "ten") deck);
+  assert_bool "Deck should contain (Diamond, Ten)"
+    (List.mem (Poker.Cards.create_card "diamond" "ten") deck);
   assert_bool "Deck should contain (Clover, Queen)"
     (List.mem (Poker.Cards.create_card "clover" "queen") deck);
   assert_bool "Deck should contain (Spade, King)"
     (List.mem (Poker.Cards.create_card "spade" "king") deck);
   assert_bool "Deck should contain (Heart, Jack)"
     (List.mem (Poker.Cards.create_card "heart" "jack") deck);
-  assert_bool "Deck should contain (Club, Four)"
-    (List.mem (Poker.Cards.create_card "club" "four") deck);
+  assert_bool "Deck should contain (Diamond, Four)"
+    (List.mem (Poker.Cards.create_card "diamond" "four") deck);
   assert_bool "Deck should contain (Clover, Nine)"
     (List.mem (Poker.Cards.create_card "clover" "nine") deck);
   assert_equal ~msg:"Deck should contain 52 unique cards" 52
@@ -211,7 +212,7 @@ let test_print_two_card _ =
 let test_print_three_card _ =
   let card1 = Poker.Cards.create_card "heart" "ace" in
   let card2 = Poker.Cards.create_card "spade" "ten" in
-  let card3 = Poker.Cards.create_card "club" "king" in
+  let card3 = Poker.Cards.create_card "diamond" "king" in
   let cardlist = [ card1; card2; card3 ] in
   let expected_output =
     "\n\
@@ -229,7 +230,7 @@ let test_print_three_card _ =
 let test_print_four_card _ =
   let card1 = Poker.Cards.create_card "heart" "eight" in
   let card2 = Poker.Cards.create_card "clover" "two" in
-  let card3 = Poker.Cards.create_card "club" "three" in
+  let card3 = Poker.Cards.create_card "diamond" "three" in
   let card4 = Poker.Cards.create_card "spade" "five" in
   let cardlist = [ card1; card2; card3; card4 ] in
 
@@ -260,9 +261,9 @@ let test_print_four_card _ =
 let test_print_five_card _ =
   let card1 = Poker.Cards.create_card "heart" "four" in
   let card2 = Poker.Cards.create_card "spade" "six" in
-  let card3 = Poker.Cards.create_card "club" "jack" in
+  let card3 = Poker.Cards.create_card "diamond" "jack" in
   let card4 = Poker.Cards.create_card "clover" "two" in
-  let card5 = Poker.Cards.create_card "club" "seven" in
+  let card5 = Poker.Cards.create_card "diamond" "seven" in
   let cardlist = [ card1; card2; card3; card4; card5 ] in
   let expected_output_part1 =
     "\n\
@@ -412,9 +413,10 @@ let test_suit_to_symbol _ =
   assert_equal "♠" (suit_to_symbol Spade);
   assert_equal "♥" (suit_to_symbol Heart);
   assert_equal "♣" (suit_to_symbol Clover);
-  assert_equal "♦" (suit_to_symbol Club)
+  assert_equal "♦" (suit_to_symbol Diamond)
 
-(* actions.ml *)
+(* Test for Actions module *)
+
 let simulate_input inputs f =
   let original_stdin = Unix.dup Unix.stdin in
   let temp_read, temp_write = Unix.pipe () in
@@ -487,6 +489,70 @@ let test_invalid_action_then_valid _ =
         (action player state [ "fold" ])
         ~msg:"Should reject invalid action and accept subsequent valid action")
 
+(* Tests for Winning Module *)
+let test_best_hand_of_seven _ =
+  let card1 = Poker.Cards.create_card "heart" "two" in
+  let card2 = Poker.Cards.create_card "heart" "three" in
+  let card3 = Poker.Cards.create_card "heart" "four" in
+  let card4 = Poker.Cards.create_card "heart" "five" in
+  let card5 = Poker.Cards.create_card "heart" "six" in
+  let card6 = Poker.Cards.create_card "spade" "seven" in
+  let card7 = Poker.Cards.create_card "diamond" "eight" in
+  let cardlist = [ card1; card2; card3; card4; card5; card6; card7 ] in
+  assert_equal (StraightFlush Six) (best_hand_of_seven cardlist);
+
+  let card1 = Poker.Cards.create_card "heart" "king" in
+  let card2 = Poker.Cards.create_card "heart" "king" in
+  let card3 = Poker.Cards.create_card "heart" "king" in
+  let card4 = Poker.Cards.create_card "heart" "king" in
+  let card5 = Poker.Cards.create_card "heart" "ace" in
+  let card6 = Poker.Cards.create_card "spade" "queen" in
+  let card7 = Poker.Cards.create_card "diamond" "jack" in
+  let cardlist = [ card1; card2; card3; card4; card5; card6; card7 ] in
+  assert_equal (FourOfAKind (King, Ace)) (best_hand_of_seven cardlist);
+
+  let card1 = Poker.Cards.create_card "heart" "king" in
+  let card2 = Poker.Cards.create_card "heart" "king" in
+  let card3 = Poker.Cards.create_card "heart" "king" in
+  let card4 = Poker.Cards.create_card "spade" "ace" in
+  let card5 = Poker.Cards.create_card "spade" "ace" in
+  let card6 = Poker.Cards.create_card "diamond" "queen" in
+  let card7 = Poker.Cards.create_card "diamond" "jack" in
+  let cardlist = [ card1; card2; card3; card4; card5; card6; card7 ] in
+  assert_equal (FullHouse (King, Ace)) (best_hand_of_seven cardlist);
+
+  let card1 = Poker.Cards.create_card "heart" "ten" in
+  let card2 = Poker.Cards.create_card "diamond" "jack" in
+  let card3 = Poker.Cards.create_card "clover" "queen" in
+  let card4 = Poker.Cards.create_card "spade" "king" in
+  let card5 = Poker.Cards.create_card "heart" "ace" in
+  let card6 = Poker.Cards.create_card "spade" "two" in
+  let card7 = Poker.Cards.create_card "diamond" "three" in
+  let cardlist = [ card1; card2; card3; card4; card5; card6; card7 ] in
+  assert_equal (Straight Ace) (best_hand_of_seven cardlist)
+
+let test_compare_hand_rank _ =
+  assert_equal 0 (compare_hand_rank RoyalFlush RoyalFlush);
+  assert_bool "StraightFlush of Queen > StraightFlush of Ten"
+    (compare_hand_rank (StraightFlush Queen) (StraightFlush Ten) > 0);
+  assert_bool "FourOfAKind of Ace > FourOfAKind of King"
+    (compare_hand_rank (FourOfAKind (Ace, King)) (FourOfAKind (King, Queen)) > 0);
+  assert_bool "FullHouse of Aces over Kings > FullHouse of Kings over Queens"
+    (compare_hand_rank (FullHouse (Ace, King)) (FullHouse (King, Queen)) > 0);
+  assert_bool "Flush with Ace high > Flush with Ten high"
+    (compare_hand_rank
+       (Flush [ Ace; King; Queen; Jack; Ten ])
+       (Flush [ Ten; Nine; Eight; Seven; Six ])
+    > 0);
+  assert_bool "Straight with Ace high > Straight with Ten high"
+    (compare_hand_rank (Straight Ace) (Straight Ten) > 0);
+  assert_bool "HighCard Ace > HighCard King"
+    (compare_hand_rank
+       (HighCard [ Ace; Ten; Nine; Eight; Seven ])
+       (HighCard [ King; Queen; Jack; Ten; Nine ])
+    > 0)
+
+(* test suite *)
 let tests =
   "Poker Test Suite"
   >::: [
@@ -534,6 +600,8 @@ let tests =
          "test_invalid_check_with_unmatched_contribution"
          >:: test_invalid_check_with_unmatched_contribution;
          "test_invalid_action_then_valid" >:: test_invalid_action_then_valid;
+         "test_best_hand_of_seven" >:: test_best_hand_of_seven;
+         "test_compare_hand_rank" >:: test_compare_hand_rank;
        ]
 
 let () = run_test_tt_main tests

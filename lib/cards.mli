@@ -2,7 +2,8 @@ type suit =
   | Spade
   | Heart
   | Clover
-  | Club  (** Represents the four suits: Spade, Heart, Clover, and Diamonds *)
+  | Diamond
+      (** Represents the four suits: Spade, Heart, Clover, and Diamonds *)
 
 type rank =
   | Two

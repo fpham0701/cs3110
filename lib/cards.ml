@@ -2,7 +2,7 @@ type suit =
   | Spade
   | Heart
   | Clover
-  | Club
+  | Diamond
 
 type rank =
   | Two
@@ -21,7 +21,7 @@ type rank =
 
 type t = suit * rank
 
-let all_suits () = [ Spade; Heart; Clover; Club ]
+let all_suits () = [ Spade; Heart; Clover; Diamond ]
 
 let all_ranks () =
   [
@@ -50,7 +50,7 @@ let match_suit suit =
   | "spade" -> Spade
   | "heart" -> Heart
   | "clover" -> Clover
-  | "club" -> Club
+  | "diamond" -> Diamond
   | _ -> raise (Invalid_argument "Incorrect Card Suit")
 
 let create_card suit rank : t =
@@ -95,7 +95,7 @@ let string_of_card (card : t) : string =
     | Spade -> "\xe2\x99\xa0" (* ♠ *)
     | Heart -> "\xe2\x99\xa5" (* ♥ *)
     | Clover -> "\xe2\x99\xa3" (* ♣ *)
-    | Club -> "\xe2\x99\xa6" (* ♦ *)
+    | Diamond -> "\xe2\x99\xa6" (* ♦ *)
   in
   let rank_to_string = function
     | Two -> "2"
@@ -119,7 +119,7 @@ let suit_to_symbol = function
   | Spade -> "♠"
   | Heart -> "♥"
   | Clover -> "♣"
-  | Club -> "♦"
+  | Diamond -> "♦"
 
 let rank_to_string = function
   | Two -> "2"

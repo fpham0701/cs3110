@@ -24,8 +24,3 @@ let create_players_with_names names =
   in
   (create_players names, deck)
 
-let print_player player =
-  Printf.printf "Player: %s\nCards: %s\n" player.name
-    (Cards.string_of_card (fst player.cards)
-    ^ ", "
-    ^ Cards.string_of_card (snd player.cards))

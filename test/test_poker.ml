@@ -2,7 +2,6 @@ open OUnit2
 open Poker.Players
 open Poker.Cards
 open Poker.Actions
-open Poker.Round
 open Poker.State
 
 (* Tests for Card Module *)
@@ -179,10 +178,6 @@ let test_get_cards _ =
   assert_bool "Alice's second card" (List.mem card2 deck);
   assert_bool "The two cards should be different" (card1 <> card2)
 
-let print_players_info player_names =
-  let players, _ = create_players_with_names player_names in
-  List.iter print_player players
-
 let test_get_deck _ =
   let players, deck = create_players_with_names [ "Alice"; "Bob" ] in
   let state = create_state players deck in
@@ -244,6 +239,10 @@ let test_suit_to_symbol _ =
   assert_equal "♦" (suit_to_symbol Club)
 
 (* round.ml *)
+
+(* actions.ml *)
+let test_action _ = 
+  
 
 let tests =
   "Poker Test Suite"

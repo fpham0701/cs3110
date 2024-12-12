@@ -1,5 +1,5 @@
 (library
  (name poker)
- (modules cards players actions round state)
+ (modules cards players actions state)
  (instrumentation
   (backend bisect_ppx)))

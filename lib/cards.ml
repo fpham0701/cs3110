@@ -28,6 +28,40 @@ let all_ranks () =
     Two; Three; Four; Five; Six; Seven; Eight; Nine; Ten; Jack; Queen; King; Ace;
   ]
 
+let match_rank rank =
+  match rank with
+  | "two" -> Two
+  | "three" -> Three
+  | "four" -> Four
+  | "five" -> Five
+  | "six" -> Six
+  | "seven" -> Seven
+  | "eight" -> Eight
+  | "nine" -> Nine
+  | "ten" -> Ten
+  | "jack" -> Jack
+  | "queen" -> Queen
+  | "king" -> King
+  | "ace" -> Ace
+  | _ -> raise (Invalid_argument "Incorrect Card Rank")
+
+let match_suit suit =
+  match suit with
+  | "spade" -> Spade
+  | "heart" -> Heart
+  | "clover" -> Clover
+  | "club" -> Club
+  | _ -> raise (Invalid_argument "Incorrect Card Suit")
+
+let create_card suit rank : t =
+  try
+    let card_rank = match_rank rank in
+    let card_suit = match_suit suit in
+    (card_suit, card_rank)
+  with e ->
+    Printf.printf "Error: %s\n" (Printexc.to_string e);
+    raise e
+
 let create_deck () : t list =
   List.flatten
     (List.map

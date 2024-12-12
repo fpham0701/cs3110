@@ -30,6 +30,18 @@ val all_suits : unit -> suit list
 val all_ranks : unit -> rank list
 (** [all_ranks ()] returns a list of all possible ranks. *)
 
+val match_rank : string -> rank
+(** [match_rank rank] returns the correct [rank]. Raises [Invalid_argument] if
+    input string does not match a valid rank*)
+
+val match_suit : string -> suit
+(** [match_suit suit] returns the correct [suit]. Raises [Invalid_argument] if
+    input string does match a valid suit*)
+
+val create_card : string -> string -> t
+(** [create_card suit rank] creates a card of [suit] and [rank]. Raises an error
+    if incorrect suit or rank is used. *)
+
 val create_deck : unit -> t list
 (** [create_deck ()] returns a list [t list] of all possible combinations of
     suits and ranks in a standard deck. *)

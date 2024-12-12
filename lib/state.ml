@@ -45,13 +45,16 @@ let fold state player =
     match state.players with
     | [ winner ] ->
         Printf.printf "\n%s is the winner!\n" (get_name winner);
-        print_endline "Game over!"
+        print_endline "Game over!";
+        exit 0
     | _ -> ()
 
 let raise_bet state player amount =
-  let new_bet = state.current_bet + amount in
-  set_contributions player new_bet;
-  update_pot state amount;
-  Printf.printf "%s has raised the current bet of %i to %i!\n\n"
-    (get_name player) state.current_bet new_bet;
-  state.current_bet <- new_bet
+  if amount > 0 then (
+    let new_bet = state.current_bet + amount in
+    set_contributions player new_bet;
+    update_pot state amount;
+    Printf.printf "%s has raised the current bet of %i by %i!\n\n"
+      (get_name player) state.current_bet amount;
+    state.current_bet <- new_bet)
+  else raise (Invalid_argument "Player cannot raise a non-positive number")

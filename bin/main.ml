@@ -331,7 +331,7 @@ let game_loop state =
   print_endline ("\n" ^ String.make 50 '\n');
   print_endline "========================================================";
   let printing_card1, printing_card2 =
-    print_four_card (get_community_cards state)
+    print_five_card (get_community_cards state)
   in
   print_endline printing_card1;
   print_endline printing_card2;

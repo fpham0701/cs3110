@@ -154,8 +154,8 @@ let print_two_card (card1 : t) (card2 : t) =
      │    %s    │      │    %s    │\n\
      │         │      │         │\n\
      │      %-2s │      │      %-2s │\n\
-     └─────────┘      └─────────┘\n"
-    rank_str1 rank_str2 suit_symbol1 suit_symbol2 rank_str1 rank_str2
+     └─────────┘      └─────────┘" rank_str1 rank_str2 suit_symbol1 suit_symbol2
+    rank_str1 rank_str2
 
 let print_three_card cardlist =
   if size cardlist = 3 then
@@ -180,9 +180,9 @@ let print_three_card cardlist =
        │    %s    │      │    %s    │      │    %s    │\n\
        │         │      │         │      │         │\n\
        │      %-2s │      │      %-2s │      │      %-2s │\n\
-       └─────────┘      └─────────┘      └─────────┘\n"
-      rank_str1 rank_str2 rank_str3 suit_symbol1 suit_symbol2 suit_symbol3
-      rank_str1 rank_str2 rank_str3
+       └─────────┘      └─────────┘      └─────────┘" rank_str1 rank_str2
+      rank_str3 suit_symbol1 suit_symbol2 suit_symbol3 rank_str1 rank_str2
+      rank_str3
   else "Error: Incorrect card length. Should be 3 cards"
 
 let print_four_card cardlist =
@@ -212,8 +212,8 @@ let print_four_card cardlist =
          |      │    %s    │      │    %s    │\n\
          |      │         │      │         │\n\
          |      │      %-2s │      │      %-2s │\n\
-         |      └─────────┘      └─────────┘\n"
-        rank_str1 rank_str2 suit_symbol1 suit_symbol2 rank_str1 rank_str2,
+         |      └─────────┘      └─────────┘" rank_str1 rank_str2 suit_symbol1
+        suit_symbol2 rank_str1 rank_str2,
       Printf.sprintf
         "\n\
          |           ┌─────────┐      ┌─────────┐\n\
@@ -222,8 +222,8 @@ let print_four_card cardlist =
          |           │     %s   │      │    %s    │\n\
          |           │         │      │         │\n\
          |           │      %-2s │      │      %-2s │\n\
-         |           └─────────┘      └─────────┘\n"
-        rank_str3 rank_str4 suit_symbol3 suit_symbol4 rank_str3 rank_str4 )
+         |           └─────────┘      └─────────┘" rank_str3 rank_str4
+        suit_symbol3 suit_symbol4 rank_str3 rank_str4 )
   else ("Error: Incorrect card length. Should be 4 cards", "")
 
 let print_five_card cardlist =
@@ -257,9 +257,9 @@ let print_five_card cardlist =
          |   │    %s    │      │    %s    │      │    %s    │\n\
          |   │         │      │         │      │         │\n\
          |   │      %-2s │      │      %-2s │      │      %-2s │\n\
-         |   └─────────┘      └─────────┘      └─────────┘\n"
-        rank_str1 rank_str2 rank_str3 suit_symbol1 suit_symbol2 suit_symbol3
-        rank_str1 rank_str2 rank_str3,
+         |   └─────────┘      └─────────┘      └─────────┘" rank_str1 rank_str2
+        rank_str3 suit_symbol1 suit_symbol2 suit_symbol3 rank_str1 rank_str2
+        rank_str3,
       Printf.sprintf
         "\n\
          |            ┌─────────┐      ┌─────────┐\n\
@@ -268,6 +268,6 @@ let print_five_card cardlist =
          |            │    %s    │      │    %s    │\n\
          |            │         │      │         │\n\
          |            │      %-2s │      │      %-2s │\n\
-         |            └─────────┘      └─────────┘\n"
-        rank_str4 rank_str5 suit_symbol4 suit_symbol5 rank_str4 rank_str5 )
+         |            └─────────┘      └─────────┘" rank_str4 rank_str5
+        suit_symbol4 suit_symbol5 rank_str4 rank_str5 )
   else ("Error: Incorrect card length. Should be 5 cards", "")

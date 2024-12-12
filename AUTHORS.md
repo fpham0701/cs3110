@@ -12,3 +12,7 @@ Collaborators:
 - Used ChatGPT 4 (from OpenAI) on 12/9 for testing the actions
 - Used ChatGPT 4 (from OpenAI) on 12/12 for simulating the the actions in the test file
 - Used ChatGPT 4 (from OpenAI) on 12/2 to help implement winning algorithm and how to go about it
+- Credit to https://nsayer.blogspot.com/2007/07/algorithm-for-evaluating-poker-hands.html for winning logic
+- Used ChatGPT 4 (from OpenAI) on 12/10 for helping with winning logic
+- Used ChatGPT 4 (from OpenAI) on 12/12 for simulating the the actions in the test file
+- Used ChatGPT 4 (from OpenAI) on 12/12 for helping with winning logic and debugging it

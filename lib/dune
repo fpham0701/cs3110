@@ -1,6 +1,6 @@
 (library
  (name poker)
- (modules cards players actions state)
+ (modules cards players actions state winning)
  (libraries unix)
  (instrumentation
   (backend bisect_ppx)))

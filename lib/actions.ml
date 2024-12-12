@@ -7,8 +7,6 @@ type t =
   | Fold
   | Raise of int
 
-let print_ref = ref true
-
 let action player state options =
   print_endline "===-----------------------------------===";
   Printf.printf "             Current Pot: %i           \n" (get_pot state);
